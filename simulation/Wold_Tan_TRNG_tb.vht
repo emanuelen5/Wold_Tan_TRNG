@@ -40,7 +40,8 @@ architecture beh of wold_tan_trng_tb is
   signal n_low, n_high : natural := 0;
   signal n_low2high, n_high2low, n_low2low, n_high2high : natural := 0;
   signal average   : real := 0.0;
-  signal deviation : real := 0.0;
+  signal state_deviation : real := 0.0;
+  signal transition_deviation : real := 0.0;
 begin
 
   clk <= not clk after CLK_PERIOD/2;
@@ -70,21 +71,24 @@ begin
 
       -- Transition statistics (should be 25/25/25/25)
       if (bit_out = '1' and last_bit_out = '1') then
-        n_high2high := n_high2high + 1;
+        n_high2high <= n_high2high + 1;
       elsif (bit_out = '1' and last_bit_out = '0') then
-        n_high2low := n_high2low + 1;
+        n_high2low <= n_high2low + 1;
       elsif (bit_out = '0' and last_bit_out = '0') then
-        n_low2low := n_low2low + 1;
+        n_low2low <= n_low2low + 1;
       elsif (bit_out = '0' and last_bit_out = '1') then
-        n_low2high := n_low2high + 1;
+        n_low2high <= n_low2high + 1;
       end if;
+
+      transition_deviation <= log(realmax(realabs(average - 0.5), 0.00000001));
       last_bit_out := bit_out;
     end loop ; -- count_high_low
+
   end process; -- tb_process
 
 
   average <= real(n_high) / REALMAX(real(n_high + n_low), 1.0);
-  deviation <= log(realmax(realabs(average - 0.5), 0.00000001));
+  state_deviation <= log(realmax(realabs(average - 0.5), 0.00000001));
 
   u0_trng : Wold_Tan_TRNG
     generic map (

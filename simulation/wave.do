@@ -7,9 +7,13 @@ add wave -noupdate /wold_tan_trng_tb/u0_trng/oscillator_ring
 add wave -noupdate /wold_tan_trng_tb/n_low
 add wave -noupdate /wold_tan_trng_tb/n_high
 add wave -noupdate -clampanalog 1 -format Analog-Step -height 50 -max 0.90000000000000002 -min 0.10000000000000001 /wold_tan_trng_tb/average
-add wave -noupdate -clampanalog 1 -format Analog-Step -height 100 -min -8.0 /wold_tan_trng_tb/deviation
+add wave -noupdate -clampanalog 1 -format Analog-Step -height 100 -min -8.0 /wold_tan_trng_tb/state_deviation
+add wave -noupdate /wold_tan_trng_tb/n_low2high
+add wave -noupdate /wold_tan_trng_tb/n_high2low
+add wave -noupdate /wold_tan_trng_tb/n_low2low
+add wave -noupdate /wold_tan_trng_tb/n_high2high
 TreeUpdate [SetDefaultTree]
-WaveRestoreCursors {{Cursor 1} {1015000000 fs} 0}
+WaveRestoreCursors {{Cursor 1} {22315000000 fs} 0}
 quietly wave cursor active 1
 configure wave -namecolwidth 106
 configure wave -valuecolwidth 75
@@ -25,4 +29,4 @@ configure wave -griddelta 50
 configure wave -timeline 0
 configure wave -timelineunits ns
 update
-WaveRestoreZoom {0 fs} {127260 ns}
+WaveRestoreZoom {0 fs} {115610747641 fs}

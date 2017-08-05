@@ -4,7 +4,7 @@ vlib work
 vdel -all
 vlib work
 
-vcom -work work -check_synthesis Wold_Tan_TRNG.vhd
+vcom -work work -check_synthesis ../Wold_Tan_TRNG.vhd
 vcom -work work Wold_Tan_TRNG_tb.vht
 
 -- Start simulation
