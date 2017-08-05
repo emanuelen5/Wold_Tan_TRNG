@@ -22,4 +22,4 @@ set StdArithNoWarnings 0
 
 view wave
 do wave.do
-run 200 ns
+run 10000 ns

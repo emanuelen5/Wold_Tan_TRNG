@@ -39,9 +39,11 @@ architecture beh of wold_tan_trng_tb is
   signal bit_out : std_logic;
   signal n_low, n_high : natural := 0;
   signal n_low2high, n_high2low, n_low2low, n_high2high : natural := 0;
-  signal average   : real := 0.0;
-  signal state_deviation : real := 0.0;
-  signal transition_deviation : real := 0.0;
+  signal state_average   : real := 0.0;
+  signal state_deviation     : real := 0.0;
+  signal state_deviation_log : real := 0.0;
+  signal transition_deviation     : real := 0.0;
+  signal transition_deviation_log : real := 0.0;
 begin
 
   clk <= not clk after CLK_PERIOD/2;
@@ -80,15 +82,39 @@ begin
         n_low2high <= n_low2high + 1;
       end if;
 
-      transition_deviation <= log(realmax(realabs(average - 0.5), 0.00000001));
       last_bit_out := bit_out;
     end loop ; -- count_high_low
 
   end process; -- tb_process
 
 
-  average <= real(n_high) / REALMAX(real(n_high + n_low), 1.0);
-  state_deviation <= log(realmax(realabs(average - 0.5), 0.00000001));
+  state_average <= real(n_high) / REALMAX(real(n_high + n_low), 1.0);
+  state_deviation     <= state_average - 0.5;
+  state_deviation_log <= log(realmax(realabs(state_deviation), 0.00000001));
+
+  transition_stat_proc : process(n_high2high, n_high2low, n_low2low, n_low2high)
+    variable n_high2high_r : real;
+    variable n_high2low_r  : real;
+    variable n_low2low_r   : real;
+    variable n_low2high_r  : real;
+    variable n_transitions : real;
+    variable n_high2high_r_sqdiff : real;
+    variable n_high2low_r_sqdiff  : real;
+    variable n_low2low_r_sqdiff   : real;
+    variable n_low2high_r_sqdiff  : real;
+  begin
+    n_high2high_r := real(n_high2high);
+    n_high2low_r  := real(n_high2low);
+    n_low2low_r   := real(n_low2low);
+    n_low2high_r  := real(n_low2high);
+    n_transitions := real(n_high + n_low);
+    n_high2high_r_sqdiff := (n_high2high_r - n_transitions/4.0)**2;
+    n_high2low_r_sqdiff  := (n_high2low_r - n_transitions/4.0)**2;
+    n_low2low_r_sqdiff   := (n_low2low_r - n_transitions/4.0)**2;
+    n_low2high_r_sqdiff  := (n_low2high_r - n_transitions/4.0)**2;
+    transition_deviation     <= sqrt(n_high2high_r_sqdiff + n_high2low_r_sqdiff + n_low2low_r_sqdiff + n_low2high_r_sqdiff)/(n_transitions/4.0 + 0.00000001);
+    transition_deviation_log <= log(realmax(transition_deviation, 0.00000001));
+  end process ; -- transition_stat_proc
 
   u0_trng : Wold_Tan_TRNG
     generic map (
